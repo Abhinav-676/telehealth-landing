@@ -61,7 +61,7 @@ export default function Services() {
         <section id="services" className="py-20 bg-gray-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div ref={headerRef} className="text-center max-w-3xl mx-auto mb-16 reveal">
-                    <h2 className="text-brand-600 font-semibold tracking-wide uppercase text-sm mb-2">Our Services</h2>
+                    <h2 className="text-brand-600 font-semibold tracking-wide uppercase text-2xl mb-10">Our Services</h2>
                     <h3 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Everything You Need for Better Health</h3>
                     <p className="text-gray-600 text-lg">A comprehensive suite of medical tools designed to bring the hospital experience to your living room.</p>
                 </div>

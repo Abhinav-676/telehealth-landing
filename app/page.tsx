@@ -10,26 +10,20 @@ import AIFeatures from "../components/AIFeatures";
 import Testimonials from "../components/Testimonials";
 import CTA from "../components/CTA";
 import Footer from "../components/Footer";
-import BookingModal from "../components/BookingModal";
 
 export default function Home() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
 
   return (
     <main className="min-h-screen bg-white">
-      <Navbar onOpenModal={openModal} />
-      <Hero onOpenModal={openModal} />
+      <Navbar />
+      <Hero />
       <Stats />
       <Services />
       <HowItWorks />
       <AIFeatures />
       <Testimonials />
-      <CTA onOpenModal={openModal} />
+      <CTA />
       <Footer />
-      <BookingModal isOpen={isModalOpen} onClose={closeModal} />
     </main>
   );
 }

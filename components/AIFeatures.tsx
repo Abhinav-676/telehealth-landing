@@ -55,7 +55,7 @@ export default function AIFeatures() {
                     {/* AI Visual */}
                     <div ref={imageRef} className="relative reveal delay-200">
                         <div className="absolute inset-0 bg-indigo-600 blur-[100px] opacity-20 rounded-full"></div>
-                        <img src="https://picsum.photos/seed/ai_medical/600/500" alt="AI Interface" className="relative rounded-2xl shadow-2xl border border-slate-700 w-full" />
+                        <img src="https://images.pexels.com/photos/305565/pexels-photo-305565.jpeg" alt="AI Interface" className="relative rounded-2xl shadow-2xl border border-slate-700 w-full" />
 
                         {/* Floating Badge */}
                         <div className="absolute -bottom-6 -right-6 bg-slate-800 border border-slate-700 p-4 rounded-xl shadow-xl flex items-center gap-3">

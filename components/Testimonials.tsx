@@ -34,7 +34,7 @@ export default function Testimonials() {
         <section id="testimonials" className="py-20 bg-brand-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div ref={headerRef} className="text-center max-w-3xl mx-auto mb-16 reveal">
-                    <h2 className="text-brand-600 font-semibold tracking-wide uppercase text-sm mb-2">Testimonials</h2>
+                    <h2 className="text-brand-600 font-semibold tracking-wide uppercase text-2xl mb-10">Testimonials</h2>
                     <h3 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Trusted by Patients & Doctors</h3>
                     <p className="text-gray-600 text-lg">Don't just take our word for it. Here is what our community has to say.</p>
                 </div>

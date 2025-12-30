@@ -6,7 +6,7 @@ interface HeroProps {
     onOpenModal: () => void;
 }
 
-export default function Hero({ onOpenModal }: HeroProps) {
+export default function Hero() {
     const contentRef = useScrollReveal();
     const imageRef = useScrollReveal();
 
@@ -35,7 +35,7 @@ export default function Hero({ onOpenModal }: HeroProps) {
                             Connect with verified doctors instantly via secure video calls. Get AI-assisted diagnoses, digital prescriptions, and 24/7 support—all from the comfort of your home.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <button onClick={onOpenModal} className="bg-brand-600 hover:bg-brand-700 text-white text-lg px-8 py-4 rounded-full font-semibold transition shadow-xl shadow-brand-500/30 transform hover:-translate-y-1 flex items-center justify-center gap-2 cursor-pointer">
+                            <button className="bg-brand-600 hover:bg-brand-700 text-white text-lg px-8 py-4 rounded-full font-semibold transition shadow-xl shadow-brand-500/30 transform hover:-translate-y-1 flex items-center justify-center gap-2 cursor-pointer">
                                 <span>Book Consultation Now</span>
                                 <i className="fa-solid fa-arrow-right"></i>
                             </button>
@@ -57,7 +57,7 @@ export default function Hero({ onOpenModal }: HeroProps) {
                     {/* Hero Visual */}
                     <div ref={imageRef} className="reveal delay-200 relative lg:h-auto">
                         <div className="relative z-10 animate-float">
-                            <img src="https://picsum.photos/seed/doctor_tech/600/600" alt="Doctor using tablet" className="rounded-3xl shadow-2xl object-cover w-full h-auto border-4 border-white/50" />
+                            <img src="https://images.pexels.com/photos/4225920/pexels-photo-4225920.jpeg" alt="Doctor using tablet" className="rounded-3xl shadow-2xl object-cover w-full h-auto border-4 border-white/50" />
 
                             {/* Floating Card 1 */}
                             <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl border border-gray-100 flex items-center gap-3 animate-bounce" style={{ animationDuration: '3s' }}>
