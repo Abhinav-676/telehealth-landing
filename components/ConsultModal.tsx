@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setFalse } from "@/store/slices/modelVisibility";
+import { generatePunctuation } from "@/actions/generatePunctuation";
 
 interface Props {
     isVisible: boolean;
@@ -15,12 +16,14 @@ export default function ConsultModal({ isVisible }: Props) {
     const close = useCallback(() => dispatch(setFalse()), [dispatch]);
 
     const [text, setText] = useState("");
-    // Speech recognition refs and state
     const [listening, setListening] = useState(false);
     const listeningRef = useRef<boolean>(false);
     const [supported, setSupported] = useState(true);
     const recognitionRef = useRef<any | null>(null);
     const baseTranscriptRef = useRef<string>("");
+    const punctuationGeneratedRef = useRef<boolean>(false);
+    const [isGeneratingPunctuation, setIsGeneratingPunctuation] = useState(false);
+    const [punctuationError, setPunctuationError] = useState("");
 
     const toggleListening = useCallback(() => {
         if (!supported) return;
@@ -111,6 +114,8 @@ export default function ConsultModal({ isVisible }: Props) {
         if (!recog) return;
 
         if (listening) {
+            // Reset the flag when starting to listen
+            punctuationGeneratedRef.current = false;
             try {
                 recog.start();
             } catch (e) {
@@ -120,8 +125,36 @@ export default function ConsultModal({ isVisible }: Props) {
             try {
                 recog.stop();
             } catch {}
+            
+            // Generate punctuation only once when listening stops
+            if (text.trim() && !punctuationGeneratedRef.current) {
+                punctuationGeneratedRef.current = true;
+                generatePunctuationFromText(text);
+            }
         }
     }, [listening, supported]);
+
+    const generatePunctuationFromText = async (textToSummarize: string) => {
+        setIsGeneratingPunctuation(true);
+        setPunctuationError("");
+        try {
+            const result = await generatePunctuation(textToSummarize);
+            if (result.success) {
+                setText(result.text || '');
+                baseTranscriptRef.current = result.text || '';
+            } else {
+                const errorMsg = result.error || "Unknown error occurred";
+                console.error("Failed to generate punctuation:", errorMsg);
+                setPunctuationError(errorMsg);
+            }
+        } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            console.error("Error generating punctuation:", errorMsg);
+            setPunctuationError(errorMsg);
+        } finally {
+            setIsGeneratingPunctuation(false);
+        }
+    };
 
     if (!isVisible) return null;
 
@@ -212,7 +245,20 @@ export default function ConsultModal({ isVisible }: Props) {
                             <p className="mt-2 text-xs text-red-500">Voice input not supported in this browser.</p>
                         )}
 
-                        <div aria-live="polite" className="sr-only">{listening ? 'Listening' : 'Not listening'}</div>
+                        {isGeneratingPunctuation && (
+                            <div className="mt-2 text-sm text-blue-600 flex items-center gap-2">
+                                <span className="inline-block h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
+                                AI Formating...
+                            </div>
+                        )}
+
+                        {punctuationError && (
+                            <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+                                Failed to generate punctuation
+                            </div>
+                        )}
+
+                        <div aria-live="polite" className="sr-only">{listening ? 'Listening' : 'Not listening'}{isGeneratingPunctuation ? ' Generating punctuation' : ''}</div>
 
                         <p className="mt-3 text-xs text-gray-400">Tip: Be as specific as possible — mention duration, intensity, and any prior conditions.</p>
                     </div>
