@@ -1,14 +1,13 @@
 "use client";
 
+import { useOpenModal } from "@/hooks/openModal";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 
-interface HeroProps {
-    onOpenModal: () => void;
-}
 
 export default function Hero() {
     const contentRef = useScrollReveal();
     const imageRef = useScrollReveal();
+    const openModal = useOpenModal();
 
     return (
         <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden bg-gradient-to-br from-brand-50 via-white to-blue-50">
@@ -35,7 +34,7 @@ export default function Hero() {
                             Connect with verified doctors instantly via secure video calls. Get AI-assisted diagnoses, digital prescriptions, and 24/7 support—all from the comfort of your home.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <button className="bg-brand-600 hover:bg-brand-700 text-white text-lg px-8 py-4 rounded-full font-semibold transition shadow-xl shadow-brand-500/30 transform hover:-translate-y-1 flex items-center justify-center gap-2 cursor-pointer">
+                            <button onClick={openModal} className="bg-brand-600 hover:bg-brand-700 text-white text-lg px-8 py-4 rounded-full font-semibold transition shadow-xl shadow-brand-500/30 transform hover:-translate-y-1 flex items-center justify-center gap-2 cursor-pointer">
                                 <span>Book Consultation Now</span>
                                 <i className="fa-solid fa-arrow-right"></i>
                             </button>
