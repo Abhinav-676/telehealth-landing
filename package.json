@@ -9,8 +9,13 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google/genai": "^1.35.0",
     "@reduxjs/toolkit": "^2.11.2",
+    "@types/dotenv": "^6.1.1",
+    "assemblyai": "^4.22.1",
+    "dotenv": "^17.2.3",
     "next": "16.1.1",
+    "node-record-lpcm16-ts": "^1.0.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-redux": "^9.2.0"

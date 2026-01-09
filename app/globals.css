@@ -38,13 +38,40 @@
     backdrop-filter: blur(10px);
 }
 
+/* Microphone / voice UI */
+.mic-btn {
+    border: 1px solid rgba(15,23,42,0.06);
+    background: white;
+    color: #0f172a;
+}
+.mic-btn svg { width: 18px; height: 18px; }
+.mic-btn.listening {
+    background: linear-gradient(90deg, var(--color-brand-600), var(--color-brand-500));
+    color: white;
+    box-shadow: 0 6px 18px rgba(124,58,237,0.12);
+    position: relative;
+}
+.mic-btn.listening::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 9999px;
+    background: rgba(124,58,237,0.12);
+    animation: mic-pulse 1.6s infinite;
+}
+@keyframes mic-pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    70% { transform: scale(1.6); opacity: 0; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+
 /* Gradient Text */
 .text-gradient {
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-image: linear-gradient(to right, #7c3aed, #2563eb);
-}
+} 
 
 body {
   @apply font-sans text-gray-700 antialiased bg-white selection:bg-brand-100 selection:text-brand-900;
