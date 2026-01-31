@@ -4,40 +4,40 @@ import { useScrollReveal } from "../hooks/useScrollReveal";
 
 const services = [
     {
-        icon: "fa-solid fa-video",
+        icon: "fa-solid fa-robot",
         color: "blue",
-        title: "Video Consultations",
-        desc: "Face-to-face doctor meetings via secure, high-definition video calls from any device."
+        title: "AI Health Assessment",
+        desc: "Complete, voice-guided medical interview to understand your condition deeply."
     },
     {
-        icon: "fa-solid fa-file-prescription",
+        icon: "fa-solid fa-file-medical-alt",
         color: "green",
-        title: "Digital Prescriptions",
-        desc: "Electronically signed prescriptions delivered instantly to your pharmacy of choice."
+        title: "Instant Reports",
+        desc: "Receive a detailed PDF report with summary, precautions, and specialist recommendations."
     },
     {
-        icon: "fa-solid fa-folder-medical",
+        icon: "fa-solid fa-user-doctor",
         color: "yellow",
-        title: "Medical Records",
-        desc: "Centralized, secure storage for all your health documents and test results."
+        title: "Human Doctor Handoff",
+        desc: "Seamlessly share your AI report with a verified specialist for final diagnosis."
     },
     {
-        icon: "fa-regular fa-calendar-check",
+        icon: "fa-solid fa-notes-medical",
         color: "purple",
-        title: "Easy Booking",
-        desc: "Search doctors by specialty and book appointments in real-time without waiting."
+        title: "Symptom Tracking",
+        desc: "Monitor the progression of your symptoms over time with smart logging."
     },
     {
-        icon: "fa-solid fa-pills",
+        icon: "fa-solid fa-shield-halved",
         color: "red",
-        title: "Drug Interaction Checker",
-        desc: "Automated safety alerts instantly warn you about potential medication conflicts."
+        title: "Data Privacy",
+        desc: "Your consultations are private and encrypted. We prioritize your confidentiality."
     },
     {
-        icon: "fa-solid fa-lock",
+        icon: "fa-solid fa-clock",
         color: "indigo",
-        title: "HIPAA-Grade Security",
-        desc: "Military-grade encryption ensures your personal data remains completely private."
+        title: "24/7 Availability",
+        desc: "Dr. Sarah never sleeps. Get medical guidance whenever you need it, day or night."
     }
 ];
 
@@ -62,8 +62,8 @@ export default function Services() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div ref={headerRef} className="text-center max-w-3xl mx-auto mb-16 reveal">
                     <h2 className="text-brand-600 font-semibold tracking-wide uppercase text-2xl mb-10">Our Services</h2>
-                    <h3 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Everything You Need for Better Health</h3>
-                    <p className="text-gray-600 text-lg">A comprehensive suite of medical tools designed to bring the hospital experience to your living room.</p>
+                    <h3 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Complete Care Cycle</h3>
+                    <p className="text-gray-600 text-lg">From initial AI assessment to professional medical care, we cover every step of your health journey.</p>
                 </div>
 
                 <div ref={gridRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 reveal">

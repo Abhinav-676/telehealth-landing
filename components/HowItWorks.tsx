@@ -5,23 +5,23 @@ import { useScrollReveal } from "../hooks/useScrollReveal";
 const steps = [
     {
         id: 1,
-        title: "Register",
-        desc: "Quick sign-up with phone verification in under 2 minutes."
+        title: "Start Session",
+        desc: "Launch the AI consultation instantly with a single click—no waiting rooms."
     },
     {
         id: 2,
-        title: "Find a Doctor",
-        desc: "Browse by specialty, location, language, and ratings."
+        title: "Speak Naturally",
+        desc: "Describe your symptoms to Dr. Sarah using your voice, just like a real doctor."
     },
     {
         id: 3,
-        title: "Book & Pay",
-        desc: "Select your time slot and complete secure payment instantly."
+        title: "AI Analysis",
+        desc: "Our advanced AI processes your input in real-time to ask relevant follow-up questions."
     },
     {
         id: 4,
-        title: "Consult",
-        desc: "Join video call, chat, share files, and receive prescriptions."
+        title: "Get Report",
+        desc: "Receive a comprehensive medical report and recommendations aimed at your recovery."
     }
 ];
 
@@ -34,8 +34,8 @@ export default function HowItWorks() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div ref={headerRef} className="text-center max-w-3xl mx-auto mb-16 reveal">
                     <h2 className="text-brand-600 font-semibold tracking-wide uppercase text-2xl mb-10">How it works</h2>
-                    <h3 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Your Journey to Better Health in 4 Steps</h3>
-                    <p className="text-gray-600 text-lg">We've removed the complexity from healthcare. Here is how simple it is to get started.</p>
+                    <h3 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Your Checkup in 4 Simple Steps</h3>
+                    <p className="text-gray-600 text-lg">We've simplified healthcare. Get professional-grade insights without the hassle.</p>
                 </div>
 
                 <div className="relative">

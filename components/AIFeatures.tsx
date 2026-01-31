@@ -18,35 +18,35 @@ export default function AIFeatures() {
                             <i className="fa-solid fa-microchip"></i>
                             AI-Powered Technology
                         </div>
-                        <h2 className="text-3xl lg:text-5xl font-bold mb-6 leading-tight">Smarter Care, <br /> <span className="text-indigo-400">Faster Diagnosis.</span></h2>
-                        <p className="text-slate-300 text-lg mb-8">We leverage cutting-edge artificial intelligence to assist doctors and ensure patient safety, giving you a technological advantage in healthcare.</p>
+                        <h2 className="text-3xl lg:text-5xl font-bold mb-6 leading-tight">Intelligent Care, <br /> <span className="text-indigo-400">Human-Like Interaction.</span></h2>
+                        <p className="text-slate-300 text-lg mb-8">Dr. Sarah isn't just a chatbot. She listens, understands contexts, and adapts her questions based on your responses.</p>
 
                         <div className="space-y-6">
                             <div className="flex items-start gap-4">
                                 <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center shrink-0">
-                                    <i className="fa-solid fa-stethoscope text-white"></i>
+                                    <i className="fa-solid fa-microphone-lines text-white"></i>
                                 </div>
                                 <div>
-                                    <h4 className="text-xl font-bold text-white mb-1">Symptom Checker</h4>
-                                    <p className="text-slate-400 text-sm">Natural language input that provides instant triage and risk assessment before you even book.</p>
+                                    <h4 className="text-xl font-bold text-white mb-1">Voice Recognition</h4>
+                                    <p className="text-slate-400 text-sm">Speak naturally. Our advanced speech-to-text engine captures every detail of your symptoms accurately.</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
                                 <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center shrink-0">
-                                    <i className="fa-solid fa-user-doctor text-white"></i>
+                                    <i className="fa-solid fa-clipboard-question text-white"></i>
                                 </div>
                                 <div>
-                                    <h4 className="text-xl font-bold text-white mb-1">Doctor AI Assistant</h4>
-                                    <p className="text-slate-400 text-sm">Provides doctors with instant case summaries and differential diagnosis suggestions.</p>
+                                    <h4 className="text-xl font-bold text-white mb-1">Adaptive Questioning</h4>
+                                    <p className="text-slate-400 text-sm">The AI dynamically generates follow-up questions based on your severity ratings and previous answers.</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
                                 <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center shrink-0">
-                                    <i className="fa-solid fa-bell text-white"></i>
+                                    <i className="fa-solid fa-file-pdf text-white"></i>
                                 </div>
                                 <div>
-                                    <h4 className="text-xl font-bold text-white mb-1">Smart Alerts</h4>
-                                    <p className="text-slate-400 text-sm">Real-time warnings for drug interactions and critical allergy alerts to keep you safe.</p>
+                                    <h4 className="text-xl font-bold text-white mb-1">Instant Reports</h4>
+                                    <p className="text-slate-400 text-sm">Get a professional PDF summary of your consultation, complete with recommendations and precautions.</p>
                                 </div>
                             </div>
                         </div>

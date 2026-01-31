@@ -2,12 +2,7 @@
 
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-    baseURL: "https://openrouter.ai/api/v1",
-    apiKey: process.env.OPEN_ROUTER,
-});
-
-const MODEL_NAME = "google/gemini-2.0-flash-exp:free";
+const MODEL_NAME = "liquid/lfm-2.5-1.2b-thinking:free";
 
 export interface Question {
     id: string;
@@ -16,6 +11,17 @@ export interface Question {
 }
 
 export async function generateFollowUpQuestions(consultationData: Record<string, string>): Promise<Question[]> {
+    const apiKey = process.env.OPEN_ROUTER;
+    if (!apiKey) {
+        console.error("OPEN_ROUTER API key is missing");
+        return [];
+    }
+
+    const openai = new OpenAI({
+        baseURL: "https://openrouter.ai/api/v1",
+        apiKey: apiKey,
+    });
+
     try {
         const dataString = Object.entries(consultationData)
             .map(([key, value]) => `- ${key}: "${value}"`)

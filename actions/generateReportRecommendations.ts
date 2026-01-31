@@ -2,12 +2,7 @@
 
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-    baseURL: "https://openrouter.ai/api/v1",
-    apiKey: process.env.OPEN_ROUTER,
-});
-
-const MODEL_NAME = "google/gemini-2.0-flash-exp:free";
+const MODEL_NAME = "liquid/lfm-2.5-1.2b-thinking:free";
 
 export interface ReportRecommendations {
     recommendedDoctor: string;
@@ -15,6 +10,20 @@ export interface ReportRecommendations {
 }
 
 export async function generateReportRecommendations(consultationData: Record<string, string>): Promise<ReportRecommendations> {
+    const apiKey = process.env.OPEN_ROUTER;
+    if (!apiKey) {
+        console.error("OPEN_ROUTER API key is missing");
+        return {
+            recommendedDoctor: "General Practitioner",
+            precautions: ["System Configuration Error: Missing API Key"],
+        };
+    }
+
+    const openai = new OpenAI({
+        baseURL: "https://openrouter.ai/api/v1",
+        apiKey: apiKey,
+    });
+
     try {
         // Convert consultation data to a readable string
         const dataSummary = Object.entries(consultationData)

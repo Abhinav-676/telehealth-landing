@@ -1,30 +1,43 @@
 'use server'
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 
-// Initialize the API with your key (stored in environment variables)
-const apiKey = process.env.GEMINI_API_KEY;
-
-if (!apiKey) {
-  throw new Error("GEMINI_API_KEY is not set in environment variables");
-}
-
-const genAI = new GoogleGenerativeAI(apiKey);
+// Using the same model as other actions for consistency via OpenRouter
+const MODEL_NAME = "liquid/lfm-2.5-1.2b-thinking:free";
 
 export async function generatePunctuation(textInput: string) {
+  const apiKey = process.env.OPEN_ROUTER;
+
+  if (!apiKey) {
+    console.error("OPEN_ROUTER API key is not set");
+    return {
+      success: false,
+      error: "Server configuration error: Missing API Key",
+    };
+  }
+
   if (!textInput) {
     throw new Error("No text provided for summarization.");
   }
 
+  const openai = new OpenAI({
+    baseURL: "https://openrouter.ai/api/v1",
+    apiKey: apiKey,
+  });
+
   try {
-    // Specify the model - use gemini-pro which is more widely available
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const prompt = `Please reformat the text with proper punctuation and line breaks. (You are a bot purposed to reformat texts, do not ask any suggestions, just perform the task): \n\n${textInput}`;
 
-    const prompt = `Please reformat the text with proper punctionations and line breaks, (You are a bot purposed to reformat texts, do not ask any suggestions, just perform the task): \n\n${textInput}`;
+    const completion = await openai.chat.completions.create({
+      model: MODEL_NAME,
+      messages: [
+        { role: "system", content: "You are a text formatting assistant." },
+        { role: "user", content: prompt }
+      ],
+      temperature: 0.2,
+    });
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const text = completion.choices[0].message.content || "";
 
     return {
       success: true,

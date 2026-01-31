@@ -18,192 +18,119 @@ export const useSpeechRecognition = (): SpeechRecognitionHook => {
     const [interimTranscript, setInterimTranscript] = useState("");
     const [hasRecognitionSupport, setHasRecognitionSupport] = useState(false);
 
-    const socketRef = useRef<WebSocket | null>(null);
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const streamRef = useRef<MediaStream | null>(null);
+    const recognitionRef = useRef<any>(null); // Type 'any' because SpeechRecognition is not standard TS yet
     const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
-    const hasSpokenRef = useRef<boolean>(false);
-
-    // Silence timeout in milliseconds - stop listening after this duration of silence
-    const SILENCE_TIMEOUT = 1500;
+    const SILENCE_TIMEOUT = 2000; // Stop after 2 seconds of silence
 
     useEffect(() => {
-        // Check if browser supports required APIs
-        setHasRecognitionSupport(
-            typeof navigator !== "undefined" &&
-            !!navigator.mediaDevices?.getUserMedia &&
-            typeof WebSocket !== "undefined"
-        );
+        // Check for browser support
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            setHasRecognitionSupport(true);
+            const recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = "en-US";
+            recognitionRef.current = recognition;
+        } else {
+            console.warn("Speech Recognition API not supported in this browser.");
+            setHasRecognitionSupport(false);
+        }
+
+        return () => {
+            if (recognitionRef.current) {
+                try {
+                    recognitionRef.current.stop();
+                } catch (e) {
+                    // Ignore errors on cleanup
+                }
+            }
+        };
     }, []);
 
     const stopListeningInternal = useCallback(() => {
-        // Clear silence timer
+        if (recognitionRef.current) {
+            try {
+                recognitionRef.current.stop();
+            } catch (e) {
+                // Already stopped
+            }
+        }
+        setIsListening(false);
+
         if (silenceTimerRef.current) {
             clearTimeout(silenceTimerRef.current);
             silenceTimerRef.current = null;
         }
-
-        // Stop MediaRecorder
-        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
-            mediaRecorderRef.current.stop();
-        }
-        mediaRecorderRef.current = null;
-
-        // Close WebSocket
-        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-            socketRef.current.close();
-        }
-        socketRef.current = null;
-
-        // Stop audio stream
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach((track) => track.stop());
-        }
-        streamRef.current = null;
-
-        setIsListening(false);
-        hasSpokenRef.current = false;
     }, []);
 
-    const startListening = useCallback(async () => {
-        if (isListening) return;
-
-        // Clean up any existing resources from previous session
-        // This prevents "Failed to execute 'start' on MediaRecorder" error
-        if (mediaRecorderRef.current) {
-            try {
-                if (mediaRecorderRef.current.state !== "inactive") {
-                    mediaRecorderRef.current.stop();
-                }
-            } catch (e) {
-                // Ignore errors during cleanup
-            }
-            mediaRecorderRef.current = null;
-        }
-
-        if (socketRef.current) {
-            try {
-                if (socketRef.current.readyState === WebSocket.OPEN ||
-                    socketRef.current.readyState === WebSocket.CONNECTING) {
-                    socketRef.current.close();
-                }
-            } catch (e) {
-                // Ignore errors during cleanup
-            }
-            socketRef.current = null;
-        }
-
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach((track) => track.stop());
-            streamRef.current = null;
-        }
-
-        if (silenceTimerRef.current) {
-            clearTimeout(silenceTimerRef.current);
-            silenceTimerRef.current = null;
-        }
-
-        // Reset state
-        hasSpokenRef.current = false;
+    const startListening = useCallback(() => {
+        if (!hasRecognitionSupport || !recognitionRef.current || isListening) return;
 
         try {
-            // Get microphone access
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            streamRef.current = stream;
+            // Reset state
+            setInterimTranscript("");
 
-            // Connect to Deepgram WebSocket with utterance_end_ms for better end detection
-            const socket = new WebSocket(
-                `wss://api.deepgram.com/v1/listen?model=nova-2&language=en&smart_format=true&interim_results=true&endpointing=300&utterance_end_ms=1000`,
-                ["token", process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY || ""]
-            );
-            socketRef.current = socket;
+            // Set up event handlers
+            recognitionRef.current.onstart = () => {
+                setIsListening(true);
+            };
 
-            socket.onopen = () => {
-                try {
-                    setIsListening(true);
+            recognitionRef.current.onerror = (event: any) => {
+                console.error("Speech recognition error", event.error);
+                // Don't stop immediately on 'no-speech' error, but others might require restart
+                if (event.error !== 'no-speech') {
+                    setIsListening(false);
+                }
+            };
 
-                    // Set up MediaRecorder to stream audio
-                    const mediaRecorder = new MediaRecorder(stream, {
-                        mimeType: "audio/webm;codecs=opus",
+            recognitionRef.current.onend = () => {
+                // If we didn't explicitly stop (isListening is true), it might have stopped due to silence or error
+                // In continuous mode, it generally keeps going, but we can manage state here.
+                // However, the native API might stop automatically.
+                // We'll trust the 'onstart'/'onend' to reflect reality, BUT:
+                // If we want it to truly be "continuous" like a session:
+                // We might need to restart it if it wasn't manually stopped. 
+                // For now, let's treat onend as "paused" or "stopped".
+                if (isListening) {
+                    setIsListening(false);
+                }
+            };
+
+            recognitionRef.current.onresult = (event: any) => {
+                let finalTrans = "";
+                let interimTrans = "";
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTrans += event.results[i][0].transcript;
+                    } else {
+                        interimTrans += event.results[i][0].transcript;
+                    }
+                }
+
+                if (finalTrans) {
+                    setTranscript((prev) => {
+                        const newTranscript = prev + (prev ? " " : "") + finalTrans;
+                        return newTranscript;
                     });
-                    mediaRecorderRef.current = mediaRecorder;
 
-                    mediaRecorder.ondataavailable = (event) => {
-                        if (event.data.size > 0 && socket.readyState === WebSocket.OPEN) {
-                            socket.send(event.data);
-                        }
-                    };
-
-                    mediaRecorder.start(250); // Send audio chunks every 250ms
-                } catch (error) {
-                    console.error("Error initializing MediaRecorder:", error);
-                    stopListeningInternal();
+                    // Reset silence timer
+                    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+                    silenceTimerRef.current = setTimeout(() => {
+                        stopListeningInternal();
+                    }, SILENCE_TIMEOUT);
                 }
+
+                setInterimTranscript(interimTrans);
             };
 
-            socket.onmessage = (event) => {
-                // Prevent ghost events from previous sockets
-                if (socket !== socketRef.current) return;
-
-                try {
-                    const data = JSON.parse(event.data);
-
-                    // Handle UtteranceEnd event - Deepgram detected end of speech
-                    if (data.type === "UtteranceEnd") {
-                        if (hasSpokenRef.current) {
-                            // User has spoken and now stopped - trigger stop after a brief delay
-                            silenceTimerRef.current = setTimeout(() => {
-                                stopListeningInternal();
-                            }, 500); // Short delay to catch any trailing words
-                        }
-                        return;
-                    }
-
-                    if (data.channel?.alternatives?.[0]?.transcript) {
-                        const text = data.channel.alternatives[0].transcript;
-
-                        // Clear any existing silence timer since we're getting speech
-                        if (silenceTimerRef.current) {
-                            clearTimeout(silenceTimerRef.current);
-                            silenceTimerRef.current = null;
-                        }
-
-                        if (data.is_final && text.trim()) {
-                            hasSpokenRef.current = true; // Mark that user has spoken something
-                            setTranscript((prev) => prev + (prev ? " " : "") + text);
-                            setInterimTranscript("");
-
-                            // Start silence timer after receiving final transcript
-                            // Stop if no more speech within SILENCE_TIMEOUT
-                            if (data.speech_final) {
-                                silenceTimerRef.current = setTimeout(() => {
-                                    stopListeningInternal();
-                                }, SILENCE_TIMEOUT);
-                            }
-                        } else if (!data.is_final) {
-                            setInterimTranscript(text);
-                        }
-                    }
-                } catch (e) {
-                    console.error("Error parsing Deepgram message:", e);
-                }
-            };
-
-            socket.onerror = (error) => {
-                if (socket !== socketRef.current) return;
-                console.error("Deepgram WebSocket error:", error);
-                stopListeningInternal();
-            };
-
-            socket.onclose = () => {
-                if (socket !== socketRef.current) return;
-                setIsListening(false);
-            };
+            recognitionRef.current.start();
         } catch (error) {
             console.error("Error starting speech recognition:", error);
             setIsListening(false);
         }
-    }, [isListening, stopListeningInternal]);
+    }, [hasRecognitionSupport, isListening, stopListeningInternal, SILENCE_TIMEOUT]);
 
     const stopListening = useCallback(() => {
         stopListeningInternal();
@@ -213,13 +140,6 @@ export const useSpeechRecognition = (): SpeechRecognitionHook => {
         setTranscript("");
         setInterimTranscript("");
     }, []);
-
-    // Cleanup on unmount
-    useEffect(() => {
-        return () => {
-            stopListening();
-        };
-    }, [stopListening]);
 
     return {
         isListening,

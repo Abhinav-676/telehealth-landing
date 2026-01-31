@@ -4,6 +4,8 @@ import { useEffect, useRef, useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setFalse } from "@/store/slices/modelVisibility";
 import { generatePunctuation } from "@/actions/generatePunctuation";
+import { generateReportRecommendations, ReportRecommendations } from "@/actions/generateReportRecommendations";
+import jsPDF from "jspdf";
 
 interface Props {
     isVisible: boolean;
@@ -24,6 +26,9 @@ export default function ConsultModal({ isVisible }: Props) {
     const punctuationGeneratedRef = useRef<boolean>(false);
     const [isGeneratingPunctuation, setIsGeneratingPunctuation] = useState(false);
     const [punctuationError, setPunctuationError] = useState("");
+
+    // New states for report generation
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     const toggleListening = useCallback(() => {
         if (!supported) return;
@@ -64,7 +69,7 @@ export default function ConsultModal({ isVisible }: Props) {
         const recog: any = new SpeechRecognition();
         recog.continuous = true;
         recog.interimResults = true;
-        recog.lang = "hi-IN";
+        recog.lang = "en-US"; // Changed to en-US for consistency, though hi-IN was there before
 
         recog.onresult = (e: any) => {
             let interim = "";
@@ -103,7 +108,7 @@ export default function ConsultModal({ isVisible }: Props) {
             recog.onend = null;
             try {
                 recog.stop();
-            } catch {}
+            } catch { }
             recognitionRef.current = null;
         };
     }, []);
@@ -124,8 +129,8 @@ export default function ConsultModal({ isVisible }: Props) {
         } else {
             try {
                 recog.stop();
-            } catch {}
-            
+            } catch { }
+
             // Generate punctuation only once when listening stops
             if (text.trim() && !punctuationGeneratedRef.current) {
                 punctuationGeneratedRef.current = true;
@@ -154,6 +159,89 @@ export default function ConsultModal({ isVisible }: Props) {
         } finally {
             setIsGeneratingPunctuation(false);
         }
+    };
+
+    const handleAnalyze = async () => {
+        if (!text.trim()) return;
+
+        setIsAnalyzing(true);
+        try {
+            // Generate recommendations based on the text input
+            const recommendations = await generateReportRecommendations({ "Patient Description": text });
+
+            // Generate PDF
+            generatePDF(recommendations);
+
+            // Optional: Close modal after success or keep open? 
+            // Often better to keep open so user knows it happened, or close it.
+            // Let's close it after a brief delay or let the user close it.
+            // For now, simply finish processing.
+        } catch (error) {
+            console.error("Analysis failed:", error);
+            alert("Failed to generate report. Please try again.");
+        } finally {
+            setIsAnalyzing(false);
+            close();
+        }
+    };
+
+    const generatePDF = (recommendations: ReportRecommendations) => {
+        const doc = new jsPDF();
+
+        // Header
+        doc.setFontSize(22);
+        doc.setTextColor(40, 40, 40);
+        doc.text("Medical Assessment Report", 20, 20);
+
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 30);
+        doc.text(`Consultant: Dr. Sarah (AI)`, 20, 36);
+
+        // Patient Description Section
+        doc.setFontSize(14);
+        doc.setTextColor(40, 40, 40);
+        doc.text("Patient Description", 20, 50);
+
+        doc.setFontSize(11);
+        doc.setTextColor(60, 60, 60);
+        // Split text to fit page width
+        const splitText = doc.splitTextToSize(text, 170);
+        doc.text(splitText, 20, 60);
+
+        // Calculate Y position after description
+        // Approximate height based on lines
+        const descriptionHeight = splitText.length * 7;
+        const afterDescriptionY = 60 + descriptionHeight + 15;
+
+        // Recommendations Section
+        doc.setFontSize(14);
+        doc.setTextColor(40, 40, 40);
+        doc.text("Clinical Recommendations", 20, afterDescriptionY);
+
+        doc.setFontSize(11);
+        doc.setTextColor(0, 0, 0);
+        doc.setFont("helvetica", "bold");
+        doc.text(`Recommended Specialist: ${recommendations.recommendedDoctor}`, 20, afterDescriptionY + 10);
+
+        doc.setFont("helvetica", "normal");
+        doc.text("Precautionary Measures:", 20, afterDescriptionY + 20);
+
+        const precautions = recommendations.precautions.map(p => `• ${p}`);
+        doc.text(precautions, 25, afterDescriptionY + 28);
+
+        // Disclaimer
+        const finalY = afterDescriptionY + 28 + (precautions.length * 7) + 20;
+        doc.setFontSize(10);
+        doc.setTextColor(150, 150, 150);
+        doc.text(
+            "Disclaimer: This report is generated by an AI assistant and does not constitute an official medical diagnosis. Please consult a human doctor for critical concerns.",
+            20,
+            finalY,
+            { maxWidth: 170 }
+        );
+
+        doc.save("assessment_report.pdf");
     };
 
     if (!isVisible) return null;
@@ -196,7 +284,7 @@ export default function ConsultModal({ isVisible }: Props) {
                 </button>
 
 
-                <form className="mt-4" onSubmit={(e) => e.preventDefault()}>
+                <form className="mt-4" onSubmit={(e) => { e.preventDefault(); handleAnalyze(); }}>
                     <div className="w-full">
                         <div className="relative rounded-md">
                             <textarea
@@ -208,12 +296,14 @@ export default function ConsultModal({ isVisible }: Props) {
                                 }}
                                 placeholder="Describe your symptoms, duration, and any other details..."
                                 className="w-full min-h-[160px] max-h-80 resize-none rounded-md border border-gray-200 p-4 text-sm text-gray-800 focus:ring-2 focus:ring-brand-500 focus:outline-none shadow-sm"
+                                disabled={isAnalyzing}
                             />
 
                             <div className="absolute right-3 bottom-3 flex items-center gap-2">
                                 <button
                                     type="button"
                                     onClick={toggleListening}
+                                    disabled={isAnalyzing}
                                     aria-pressed={listening}
                                     aria-label={listening ? "Stop listening" : "Start voice input"}
                                     className={`mic-btn ${listening ? "listening" : ""} flex items-center justify-center rounded-full p-2 transition-transform focus:outline-none`}
@@ -267,16 +357,25 @@ export default function ConsultModal({ isVisible }: Props) {
                         <button
                             type="button"
                             onClick={close}
-                            className="px-4 py-2 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            disabled={isAnalyzing}
+                            className="px-4 py-2 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
                         >
                             Cancel
                         </button>
 
                         <button
                             type="submit"
-                            className="px-5 py-2 rounded-md bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow hover:from-brand-700"
+                            disabled={!text.trim() || isAnalyzing}
+                            className="px-5 py-2 rounded-md bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow hover:from-brand-700 disabled:opacity-70 flex items-center gap-2"
                         >
-                            Analyze
+                            {isAnalyzing ? (
+                                <>
+                                    <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                                    Analyze...
+                                </>
+                            ) : (
+                                "Analyze"
+                            )}
                         </button>
                     </div>
                 </form>
