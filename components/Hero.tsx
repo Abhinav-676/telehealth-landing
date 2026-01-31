@@ -2,6 +2,7 @@
 
 import { useOpenModal } from "@/hooks/openModal";
 import { useScrollReveal } from "../hooks/useScrollReveal";
+import Link from "next/link";
 
 
 export default function Hero() {
@@ -34,13 +35,13 @@ export default function Hero() {
                             Connect with verified doctors instantly via secure video calls. Get AI-assisted diagnoses, digital prescriptions, and 24/7 support—all from the comfort of your home.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <button onClick={openModal} className="bg-brand-600 hover:bg-brand-700 text-white text-lg px-8 py-4 rounded-full font-semibold transition shadow-xl shadow-brand-500/30 transform hover:-translate-y-1 flex items-center justify-center gap-2 cursor-pointer">
+                            <Link href="/consultation" className="bg-brand-600 hover:bg-brand-700 text-white text-lg px-8 py-4 rounded-full font-semibold transition shadow-xl shadow-brand-500/30 transform hover:-translate-y-1 flex items-center justify-center gap-2 cursor-pointer">
                                 <span>Book Consultation Now</span>
                                 <i className="fa-solid fa-arrow-right"></i>
-                            </button>
-                            <button className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-lg px-8 py-4 rounded-full font-semibold transition flex items-center justify-center gap-2 cursor-pointer">
+                            </Link>
+                            <button onClick={openModal} className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-lg px-8 py-4 rounded-full font-semibold transition flex items-center justify-center gap-2 cursor-pointer">
                                 <i className="fa-solid fa-play text-brand-600"></i>
-                                <span>Watch Demo</span>
+                                <span>Quick Summerize</span>
                             </button>
                         </div>
                         <div className="mt-8 flex items-center gap-4 text-sm text-gray-500">

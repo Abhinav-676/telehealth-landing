@@ -2,6 +2,7 @@
 
 import { useOpenModal } from "@/hooks/openModal";
 import { useScrollReveal } from "../hooks/useScrollReveal";
+import Link from "next/link";
 
 interface CTAProps {
     onOpenModal: () => void;
@@ -19,9 +20,9 @@ export default function CTA() {
             <div ref={ref} className="max-w-4xl mx-auto px-4 text-center relative z-10 reveal">
                 <h2 className="text-3xl lg:text-5xl font-bold text-white mb-6">Ready to Transform Your Healthcare?</h2>
                 <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">Join thousands of users who are using our secure, reliable, and AI-powered platform daily to manage their health.</p>
-                <button onClick={openModal} className="bg-brand-600 hover:bg-brand-500 text-white text-xl px-10 py-5 rounded-full font-bold transition shadow-2xl shadow-brand-600/40 transform hover:scale-105 cursor-pointer">
+                <Link href="/consultation" className="inline-block bg-brand-600 hover:bg-brand-500 text-white text-xl px-10 py-5 rounded-full font-bold transition shadow-2xl shadow-brand-600/40 transform hover:scale-105 cursor-pointer">
                     Get Started Today
-                </button>
+                </Link>
                 <p className="mt-6 text-sm text-gray-500">No credit card required for sign-up.</p>
             </div>
         </section>

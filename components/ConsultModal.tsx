@@ -64,7 +64,7 @@ export default function ConsultModal({ isVisible }: Props) {
         const recog: any = new SpeechRecognition();
         recog.continuous = true;
         recog.interimResults = true;
-        recog.lang = "en-US";
+        recog.lang = "hi-IN";
 
         recog.onresult = (e: any) => {
             let interim = "";

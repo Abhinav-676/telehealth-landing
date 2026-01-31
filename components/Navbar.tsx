@@ -2,6 +2,7 @@
 
 import { useOpenModal } from "@/hooks/openModal";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 interface NavbarProps {
     onOpenModal: () => void;
@@ -43,9 +44,9 @@ export default function Navbar() {
                         <a href="#how-it-works" className="text-gray-600 hover:text-brand-600 font-medium transition">How It Works</a>
                         <a href="#ai-features" className="text-gray-600 hover:text-brand-600 font-medium transition">AI Features</a>
                         <a href="#testimonials" className="text-gray-600 hover:text-brand-600 font-medium transition">Reviews</a>
-                        <button onClick={openModal} className="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-lg shadow-brand-500/30 transform hover:-translate-y-0.5 cursor-pointer">
+                        <Link href="/consultation" className="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-lg shadow-brand-500/30 transform hover:-translate-y-0.5 cursor-pointer">
                             Book Consultation
-                        </button>
+                        </Link>
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -68,9 +69,9 @@ export default function Navbar() {
                     <a href="#how-it-works" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50">How It Works</a>
                     <a href="#ai-features" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50">AI Features</a>
                     <a href="#testimonials" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-gray-50">Reviews</a>
-                    <button onClick={openModal} className="w-full mt-4 bg-brand-600 text-white px-6 py-3 rounded-lg font-medium shadow-md">
+                    <Link href="/consultation" className="block w-full text-center mt-4 bg-brand-600 text-white px-6 py-3 rounded-lg font-medium shadow-md">
                         Book Consultation Now
-                    </button>
+                    </Link>
                 </div>
             </div>
         </nav>
